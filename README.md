@@ -1,4 +1,4 @@
-# D-Blog
+
 ## Author
 
 [Damaris Chepchirchir ](https://github.com/chepceline/my-blog.git)
