@@ -5,8 +5,8 @@ from app import db
 
 class BlogModelTest(unittest.TestCase):
     def setUp(self):
-        self.user_charles = User(username='cha', password='chako', email='test@test.com')
-        self.new_blog = Blog(id=1, title='Test', content='This is a test blog', user_id=self.user_charles.id)
+        self.user_damaris = User(username='dama', password='chako', email='test@test.com')
+        self.new_blog = Blog(id=1, title='Test', content='This is a test blog', user_id=self.user_damaris.id)
 
     def tearDown(self):
         Blog.query.delete()
@@ -24,4 +24,4 @@ class BlogModelTest(unittest.TestCase):
     def test_get_blog(self):
         self.new_blog.save()
         got_blog = Blog.get_blog(1)
-        self.assertTrue(get_blog is not None)
+        self.assertTrue(self.new_user.get_blog is not None)

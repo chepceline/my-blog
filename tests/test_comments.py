@@ -40,4 +40,4 @@ class CommentModelTest(unittest.TestCase):
     def test_get_comment(self):
         self.new_comment.save()
         got_comment = Comment.get_comment(1)
-        self.assertTrue(get_comment is not None)
+        self.assertTrue(self.new_user.get_comment is not None)
