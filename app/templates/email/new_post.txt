@@ -1,0 +1,9 @@
+Hi {{ user.fname.capitalize() }},
+
+Read this new article by {{ poster.fname.capitalize() }} {{ poster.lname.capitalize() }} through this link.
+
+
+{{post.title}} 
+
+
+Blog Team

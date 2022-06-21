@@ -1,0 +1,106 @@
+{% extends 'base.html' %}
+{% import 'bootstrap/wtf.html' as wtf %}
+
+{%block styles %}
+{{super()}}
+{{ simplemde.css}}
+{{ simplemde.js }}
+{% endblock %}
+
+{% block main %}
+{{ super() }}
+
+<div class="container-fluid post-wrapper">
+    <div class="container my-5 article-wrapper">
+        <div class="post-title">
+            <h2>{{post.title}}</h2>
+        </div>
+        <hr>
+        <div class="row">
+            <form action="{{ url_for('main.profile', id=post.user.id, username=post.user.username)}}"
+                class="col-10">
+                <button type="submit" class="prof-btn">
+                    <div class="d-flex align-items-center author mb-3">
+                        <div class="pic me-2">
+                            <div class="author-pic ">
+                                <img src="{{url_for('static', filename=post.user.profile_pic_path)}}" alt="">
+                            </div>
+                        </div>
+                        <div class="name">
+                            <strong>{{ post.user.fname }} {{ post.user.lname }}</strong><br>
+                            <small class="post-date">Published at
+                                {{ post.posted.strftime('%I:%M %p, %b %d, %Y.') }}</small>
+                        </div>
+
+                    </div>
+                </button>
+            </form>
+            {% if post.user == current_user %}
+            <form action="{{url_for('main.delete', id=post.id)}}" class="col-1 actions">
+                <button type="submit">
+                    <i class="fas fa-trash-alt"></i>
+                </button>
+            </form>
+            <form action="{{url_for('main.edit_article', id=post.id)}}" class="col-1 actions">
+                <button type="submit">
+                    <i class="fas fa-pencil-alt"></i>
+                </button>
+            </form>
+            {% endif %}
+        </div>
+        <hr>
+        <div class="body">
+            {{ formatted_post | safe }}
+        </div>
+
+        <div class="post-footer d-flex">
+            <div class="likes me-4">
+                <a href="{{url_for('main.like', id=post.id)}}"><i class="fas fa-thumbs-up mx-1"></i></a>{{post.likes.count()}}
+            </div>
+            <div class="comments">
+                <a href="#"><i class="fas fa-comment mx-1"></i></a>{{post.comments.count()}}
+            </div>
+        </div>
+        <!-- Comments -->
+        <div class="new-comment mb-4">
+            {% if current_user.is_authenticated %}
+                {{wtf.quick_form(form)}}
+                {{simplemde.load_id('comment') }}
+            {% else %}
+                <p><strong><a href="{{ url_for('auth.login') }}">Log in</a> to comment.</strong></p>
+            {% endif %}
+        </div>
+
+        <hr>
+        {% for comment in comments %}
+        <hr>
+        <div class="comments">
+            <div class="d-flex justify-content-between align-items-start">
+                <div class="d-flex align-items-center author mb-3">
+                    <div class="pic me-2">
+                        <div class="author-pic ">
+                            <img src="{{url_for('static', filename=comment['obj'].user.profile_pic_path)}}" alt="">
+                        </div>
+                    </div>
+                    <div class="name">
+                        <strong>{{ comment['obj'].user.fname }} {{ comment['obj'].user.lname }}</strong><br>
+                        <small class="post-date">Commented at
+                            {{ comment['obj'].posted.strftime('%I:%M %p, %b %d, %Y.') }}</small>
+                    </div>
+                </div>
+                {% if current_user==post.user%}
+                <div class="del">
+                    <a href="{{url_for('main.del_comment', id=comment['obj'].id)}}"><i class="fas fa-trash-alt"></i></a>
+                </div>
+                {%endif%}
+            </div>
+            <div class="post-preview">
+                <p class="ms-5">
+                    {{ comment['formatted_comment'] | safe }}
+                </p>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{%endblock%}

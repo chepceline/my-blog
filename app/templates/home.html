@@ -1,0 +1,74 @@
+{% extends 'index.html'%} {% block sidebar %}{{ super() }}
+<div class="sidebar p-3 position-fixed">
+    {% if current_user.is_authenticated %}
+	<form action="{{ url_for('main.profile', username = current_user.username, id = current_user.id)}}">
+        <button class="profile-pic block overflow-hidden rounded-full" type="submit">
+            <img class="block w-full" src="{{url_for('static', filename=current_user.profile_pic_path)}}"
+                alt="Profile Pic" />
+    </form>
+    {% else %}
+    <form action="{{ url_for('auth.login')}}">
+        <button class="profile-pic block overflow-hidden rounded-full" type="submit">
+            <img class="block w-full" src="{{url_for('static', filename='img/default.jpg')}}" alt="Profile Pic" />
+        </button>
+    </form>
+    {% endif %}
+
+
+</div>
+{% endblock %} {% block space %} {{ super() }}
+
+<div class="col-10">
+
+        {% block banner %} {% include 'banner.html' %} {% endblock %}
+
+    <!-- Write new article -->
+    <div class="card px-2 my-2 position-relative">
+        <form class="mx-3 mt-4 mb-3" action="{{ url_for('main.new_article')}}">
+            <button type="submit" class="btn btn-block new-article p-3">
+                <i class="fas fa-pencil-alt me-3"></i>Write an article...
+            </button>
+        </form>
+    </div>
+
+    <!-- #################### -->
+    {% for post in formatted_posts %}
+	
+            <div class="card p-3 my-2">
+                <div class="d-flex align-items-center author mb-3">
+                    <div class="pic me-2">
+                        <div class="author-pic ">
+                            <img src="{{url_for('static', filename=post['obj'].user.profile_pic_path)}}" alt="">
+                        </div>
+                    </div>
+                    <div class="name">
+                        <strong>{{ post['obj'].user.fname }} {{ post['obj'].user.lname }}</strong><br>
+                        <small class="post-date">{{ post['obj'].posted.strftime('%I:%M %p, %b %d, %Y') }}</small>
+                    </div>
+                </div>
+                <form action="{{ url_for('main.article', id = post['obj'].id)}}">
+                    <button type="submit" class="article_btn">
+                <div class="post-preview">
+                    <h5><strong>{{ post['obj'].title }}</strong></h5>
+                    <p class="preview">
+                        {{ post['formatted_content'] | safe | truncate(300)}}
+                    </p>
+                </div>
+                </button>
+                </form>
+                <div class="post-footer d-flex">
+                    <div class="likes me-4">
+                        <a href="{{url_for('main.like', id=post['obj'].id)}}"><i class="fas fa-thumbs-up mx-1"></i></a>{{post['obj'].likes.count()}}
+                    </div>
+                    <div class="comments">
+                        <a href="#"><i class="fas fa-comment mx-1"></i></a>{{post['obj'].comments.count()}}
+                    </div>
+                </div>
+            </div>
+        
+    {%endfor%}
+
+
+</div>
+
+{% endblock %}
