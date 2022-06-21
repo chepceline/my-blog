@@ -41,6 +41,9 @@ class User(UserMixin,db.Model):
     def verify_password(self,password):
         return check_password_hash(self.pass_secure, password)
 
+    def verify_password(self,password):
+        return check_password_hash(self.pass_secure, password)
+
     def like_post(self, post):
         if not self.has_liked_post(post):
             like = PostLike(user_id=self.id, post_id=post.id)
