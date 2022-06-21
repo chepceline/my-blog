@@ -1,104 +1,129 @@
-from . import db,login_manager
-from flask_login import current_user,UserMixin
-from werkzeug.security import generate_password_hash,check_password_hash
+from sqlalchemy.orm import backref
+from . import db
+from werkzeug.security import generate_password_hash, check_password_hash
+from flask_login import UserMixin
+from . import login_manager
 from datetime import datetime
+from sqlalchemy import desc
 
 @login_manager.user_loader
 def load_user(user_id):
-    return User.query.get(user_id)
+    return User.query.get(int(user_id))
 
-class User (UserMixin,db.Model):
+class User(UserMixin,db.Model):
     __tablename__ = 'users'
-    id = db.Column(db.Integer,primary_key = True)
-    username = db.Column(db.String(255),unique = True,nullable = False)
-    email = db.Column(db.String(255), unique = True,nullable = False)
-    bio = db.Column(db.String(255),default ='My default Bio')
-    profile_pic_path = db.Column(db.String(150),default ='default.png')
-    hashed_password = db.Column(db.String(255),nullable = False)
-    blog = db.relationship('Blog', backref='user', lazy='dynamic')
-    comment = db.relationship('Comment', backref='user', lazy='dynamic')
-    
-    @property
-    def set_password(self):
-        raise AttributeError('You cannot read the password attribute')
 
-    @set_password.setter
+    id = db.Column(db.Integer, primary_key = True)
+    username = db.Column(db.String(255))
+    fname = db.Column(db.String(255))
+    lname = db.Column(db.String(255))
+    bio = db.Column(db.String(255))
+    sub = db.Column(db.Boolean, default=False)
+    email = db.Column(db.String(255), unique=True, index=True)
+    profile_pic_path = db.Column(db.String())
+    pass_secure = db.Column(db.String(255))
+
+    posts = db.relationship('Post', backref='user', lazy='dynamic')
+    comments = db.relationship('Comment', backref='user', lazy='dynamic')
+    liked_posts = db.relationship('PostLike', foreign_keys='PostLike.user_id', backref='user', lazy='dynamic')
+    liked_comments = db.relationship('CommentLike', foreign_keys='CommentLike.user_id', backref='user', lazy='dynamic')
+
+
+    @property
+    def password(self):
+        raise AttributeError('You cannnot read the password attribute')
+
+    @password.setter
     def password(self, password):
-        self.hashed_password = generate_password_hash(password)
+        self.pass_secure = generate_password_hash(password)
 
 
     def verify_password(self,password):
-        return check_password_hash(self.hashed_password,password)
+        return check_password_hash(self.pass_secure, password)
 
-    def save(self):
-        db.session.add(self)
-        db.session.commit()
-    def delete(self):
-        db.session.delete(self)
-        db.session.commit()
+    def like_post(self, post):
+        if not self.has_liked_post(post):
+            like = PostLike(user_id=self.id, post_id=post.id)
+            db.session.add(like)
+        else:
+            like = PostLike.query.filter(PostLike.user_id == self.id, PostLike.post_id == post.id).first()
+            db.session.delete(like)
 
-    def __repr__(self):
-        return "User: %s" %str(self.username)
+    # def unlike_post(self, post):
+    #     if self.has_liked_post(post):
+    #         PostLike.query.filter_by(user_id = self.id, post_id = post.id).delete()
 
-class Blog(db.Model):
-    __tablename__ = 'blogs'
-    id = db.Column(db.Integer,primary_key=True)
-    title = db.Column(db.String(255),nullable=False)
-    content = db.Column(db.Text(),nullable=False)
-    posted = db.Column(db.DateTime,default=datetime.utcnow)
-    user_id = db.Column(db.Integer,db.ForeignKey("users.id"))
-    comment = db.relationship('Comment', backref='blog', lazy='dynamic')
-
-    def save(self):
-        db.session.add(self)
-        db.session.commit()
-
-    def delete(self):
-        db.session.delete(self)
-        db.session.commit()
-
-    def get_blog(id):
-        blog = Blog.query.filter_by(id=id).first()
-
-        return blog
+    def has_liked_post(self, post):
+        return PostLike.query.filter(PostLike.user_id == self.id, PostLike.post_id == post.id).count() > 0
 
     def __repr__(self):
-        return f'Blog {self.title}'
+        return f'User {self.username}'
 
-class Comment(db.Model):
-    __tablename__='comments'
+class Quote:
+    '''Define the quote response from the API.
+    '''
+    def __init__(self, id, author, quote):
+        self.id = id
+        self.author = author
+        self.quote = quote
+
+class Post(db.Model):
+    __tablename__ = 'posts'
 
     id = db.Column(db.Integer,primary_key = True)
-    comment = db.Column(db.String)
-    posted = db.Column(db.DateTime,default=datetime.utcnow)
-    blog_id = db.Column(db.Integer,db.ForeignKey("blogs.id"))
-    user_id = db.Column(db.Integer,db.ForeignKey("users.id"))
+    title = db.Column(db.String())
+    content = db.Column(db.String())
+    posted = db.Column(db.DateTime, default=datetime.now)
 
-    def save(self):
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+    likes = db.relationship('PostLike', backref='post', lazy='dynamic')
+    comments = db.relationship('Comment', backref='post', lazy='dynamic')
+
+    def save_post(self):
         db.session.add(self)
         db.session.commit()
 
-    def delete(self):
-        db.session.remove(self)
-        db.session.commit()
+    @classmethod
+    def get_posts(cls):
+        posts = Post.query.order_by(desc(Post.posted)).all()
+        return posts
 
-    def get_comment(id):
-        comment = Comment.query.all(id=id)
-        return comment
+    @classmethod
+    def get_posts_by_user(cls, id):
+        posts = Post.query.filter_by(user_id=id).all()
+        return posts
 
+class Comment(db.Model):
+    __tablename__ = 'comments'
 
-    def __repr__(self):
-        return f'Comment {self.comment}'
+    id = db.Column(db.Integer,primary_key = True)
+    comment = db.Column(db.String())
+    posted = db.Column(db.DateTime, default=datetime.now)
 
-class Subscriber(db.Model):
-    __tablename__='subscribers'
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+    post_id = db.Column(db.Integer, db.ForeignKey('posts.id'))
+    likes = db.relationship('CommentLike', backref='comment', lazy='dynamic')
 
-    id=db.Column(db.Integer,primary_key=True)
-    email = db.Column(db.String(255),unique=True,index=True)
-
-    def save_subscriber(self):
+    def save_comment(self):
         db.session.add(self)
         db.session.commit()
 
-    def __repr__(self):
-        return f'Subscriber {self.email}'
+    @classmethod
+    def get_comments(cls, id):
+        comments = Comment.query.filter_by(post_id=id)
+        return comments
+
+
+
+class PostLike(db.Model):
+    __tablename__ = "post_likes"
+
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+    post_id = db.Column(db.Integer, db.ForeignKey('posts.id'))
+
+class CommentLike(db.Model):
+    __tablename__ = 'comment_likes'
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+    comment_id = db.Column(db.Integer, db.ForeignKey('comments.id'))

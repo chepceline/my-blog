@@ -1,28 +1,17 @@
 from flask_wtf import FlaskForm
-from flask_wtf.file import FileField,FileAllowed
-from wtforms import StringField,TextAreaField, SubmitField,ValidationError
-from wtforms.validators import Required,Email
-from flask_login import current_user
-from ..models import User
+from wtforms import StringField, SubmitField, TextAreaField
+from wtforms.validators import DataRequired, Length
+from flask_wtf.file import FileField, FileAllowed, FileRequired
 
-class UpdateProfile(FlaskForm):
-    username = StringField('Enter Your Username', validators=[Required()])
-    email = StringField('Email Address', validators=[Required(),Email()])
-    bio = TextAreaField('Write a brief bio about you.',validators = [Required()])
-    profile_picture = FileField('profile picture', validators=[FileAllowed(['jpg','png'])])
-    submit = SubmitField('Update')
+class NewBlog(FlaskForm):
+    title = StringField("", validators =[DataRequired()], render_kw={"placeholder": "Blog title..."})
+    content = TextAreaField("", render_kw={"placeholder": "Tell your story..."})
+    submit = SubmitField('Publish')
 
-    def validate_email(self,email):
-        if email.data != current_user.email:
-            if User.query.filter_by(email = email.data).first():
-                raise ValidationError("The Email has already been taken!")
-    
-    def validate_username(self, username):
-        if username.data != current_user.username:
-            if User.query.filter_by(username = username.data).first():
-                raise ValidationError("The username has already been taken")
+class NewComment(FlaskForm):
+    comment = TextAreaField("", render_kw={"placeholder": "Share your thoughts..."})
+    submit = SubmitField('Comment')
 
-class CreateBlog(FlaskForm):
-    title = StringField('Title',validators=[Required()])
-    content = TextAreaField('Blog Content',validators=[Required()])
-    submit = SubmitField('Post')
+class UpdateProfilePic(FlaskForm):
+    profile = FileField('Change Profile Picture', validators=[FileRequired(), FileAllowed(['jpg','png'], 'Images only allowed.')])
+    submit = SubmitField('Change')
