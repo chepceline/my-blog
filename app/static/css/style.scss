@@ -1,0 +1,222 @@
+@import url(https://fonts.googleapis.com/css?family=Inter:100,200,300,regular,500,600,700,800,900);
+@import url(https://fonts.googleapis.com/css?family=Pacifico:regular);
+$main-font: 'Inter', sans-serif;
+$text-font-color: #474242;
+$primary-color: #0C6EFD;
+$bg-color: #F5F7FA;
+
+
+html, *{
+    font-size: 16px;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+body{
+    background-color: $bg-color;
+    font-family: $main-font !important;
+}
+.container{
+    width: 80%;
+}
+
+.profile-pic{
+    height: 3.5rem;
+    width: 3.5rem;
+    border-radius: 50%;
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    &:hover{
+        cursor: pointer;
+    }
+    img{
+        object-fit: cover;
+        min-height: 130%;
+        width: 130%;
+    }
+}
+.sidebar{
+    height: 100vh;
+    display: flex;
+    justify-content: flex-end;
+    align-items: flex-end;
+}
+.banner{
+    margin-top: 100px;
+    width: 100%;
+}
+.new-article{
+    background-color: $bg-color;
+    text-align: start;
+    color: grey;
+    border: 0.3px solid lightgrey;
+    &:hover{
+        background-color: white;
+        color: grey;
+    }
+}
+
+.author-pic {
+    height: 2.5rem;
+    width: 2.5rem;
+    border-radius: 50%;
+    overflow: hidden;
+    border: 2px solid white;
+    border-collapse: separate;
+    border-spacing: 4px;
+
+    &:hover {
+        cursor: pointer;
+    }
+
+    img {
+        object-fit: cover;
+        height: 100%;
+        width: 100%;
+    }
+}
+.author{
+    color: $text-font-color;
+    .name {
+        line-height: 1rem;
+    }
+
+    .post-date {
+        font-size: 0.8rem;
+    }
+}
+.pic{
+    border: 2px solid orange;
+    border-radius: 50%;
+}
+.preview, .preview p>p{
+    font-size: 0.8rem;
+}
+.post-footer{
+    color: grey;
+}
+.header{
+    width: 100%;
+}
+.form{
+    #title{
+        padding-top: 2rem;
+        padding-bottom: 2rem;
+        font-size: 2rem;
+        font-weight: 500;
+    }
+    #submit{
+        color: $primary-color;
+        border: 1px solid $primary-color;
+        &:hover{
+            background-color: $primary-color;
+            color: white;
+        }
+    }
+}
+.article_btn{
+    text-align: left;
+    border: none;
+    background-color: white;
+    width: 100%;
+}
+
+.post-wrapper{
+    background-color: white;
+}
+
+// Profile
+.profile-content {
+    margin-top: 15vh;
+    background-color: white;
+    border-radius: 1rem;
+    padding: 4rem;
+
+    .profile-header {
+        display: flex;
+        flex-direction: row;
+        align-items: flex-end;
+        margin-bottom: 3rem;
+
+        &>div {
+            margin-right: 1rem;
+        }
+    }
+
+    h4 {
+        color: $primary-color;
+    }
+    a{
+        text-decoration: none;
+        color: grey;
+    }
+}
+
+#dp img {
+    height: 12rem;
+    width: 12rem;
+    object-fit: cover;
+    border-radius: 0.5rem;
+}
+.prof-post-ftr{
+    font-size: 0.8rem;
+}
+.prof-btn{
+    border: none;
+    background-color: white;
+    text-align: left;
+}
+.likes, .comments{
+    a{
+        color: grey !important;
+        &:hover{
+            color: $primary-color;
+        }
+    }
+}
+.actions{
+    button{
+        border: none;
+        color: $primary-color;
+        border-radius: 50%;
+        padding: 0.2rem;
+        height: 2.2rem;
+        width: 2.2rem;
+        background-color: #0c6cfd17;
+    }
+}
+
+nav{
+    height: 80px;
+    background-color: $primary-color;
+    .brand{
+        font-family: 'Pacifico', cursive;
+        a{
+            color: white;
+            font-size: 2rem;
+        }
+    }
+    button{
+        background-color: white !important;
+        border: none;
+        color: $primary-color !important;
+        font-weight: 300 !important;
+        font-size: 0.8rem;
+    }
+}
+.sign-form, .article-wrapper, .new-wrapper{
+    margin-top: 100px !important;
+}
+
+.del{
+    a,i{
+        color: grey;
+        transition: 150ms;
+
+        &:hover {
+            color: red;
+        }
+    }
+}
