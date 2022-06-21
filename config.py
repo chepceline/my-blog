@@ -4,9 +4,9 @@ class Config:
     '''
     General configuration parent class
     '''
-    QUOTES_API_BASE_URL ='http://quotes.stormconsultancy.co.uk/random.json'
-    SECRET_KEY = SECRET_KEY ='aa;ag8CFuGqen;YpA}}-G%64C}ggiN'
-    UPLOADED_PHOTOS_DEST ='app/static/img'
+    QUOTES_API_BASE_URL='http://quotes.stormconsultancy.co.uk/random.json'
+    SECRET_KEY = SECRET_KEY='aa;ag8CFuGqen;YpA}}-G%64C}ggiN'
+    UPLOADED_PHOTOS_DEST='app/static/img'
     
     # Email configurations
     MAIL_SERVER = 'smtp.googlemail.com'
@@ -27,9 +27,9 @@ class ProdConfig(Config):
     Args:
         Config: The parent configuration class with General configuration settings
     '''
-    SQLALCHEMY_DATABASE_URI = os.environ.get("DATABASE_URL", "")
+    SQLALCHEMY_DATABASE_URI=os.environ.get("DATABASE_URL", "")
     if SQLALCHEMY_DATABASE_URI.startswith("postgres://"):
-        SQLALCHEMY_DATABASE_URI = SQLALCHEMY_DATABASE_URI.replace("postgres://","postgresql://",1)
+        SQLALCHEMY_DATABASE_URI=SQLALCHEMY_DATABASE_URI.replace("postgresql://","postgresql://",1)
 
 class DevConfig(Config):
     '''
@@ -38,7 +38,7 @@ class DevConfig(Config):
     Args:
         Config: The parent configuration class with General configuration settings
     '''
-    SQLALCHEMY_DATABASE_URI ='postgresql+psycopg2://celine:cel250@localhost/blog'
+    SQLALCHEMY_DATABASE_URI='postgresql+psycopg2://celine:cel250@localhost/blog'
     DEBUG = True
 
 config_options = {
