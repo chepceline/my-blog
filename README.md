@@ -8,7 +8,7 @@ This  is a flask application that allows writers to post blogs, edit and delite 
 
 ## Live Link
 [View Site]
-
+https://dama-blog.herokuapp.com/
 
 
 ## User Story
